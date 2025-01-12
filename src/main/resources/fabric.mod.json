@@ -2,7 +2,7 @@
 	"schemaVersion": 1,
 	"id": "raw-tpchat",
 	"version": "${version}",
-	"name": "Raw Tp Command",
+	"name": "Raw Tp Chat Command",
 	"description": "/tpchat is simple command that sends clickable messages for teleporting. You can click the highlighted text to teleport.",
 	"authors": [
 		"Jax Young",
