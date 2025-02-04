@@ -22,9 +22,6 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public final class RawTpChat {
-    private RawTpChat() {
-    }
-
     public static final ModInitializer MAIN = () -> {
         CommandRegistrationCallback.EVENT.register(((dispatcher, commandRegistryAccess, registrationEnvironment) -> {
             dispatcher.register(CommandManager.literal("tpchat")
@@ -33,7 +30,7 @@ public final class RawTpChat {
                         if (source.isExecutedByPlayer()) {
                             final ServerPlayerEntity player = source.getPlayer();
                             assert player != null;
-                            final String dimensionId = player.getServerWorld().getDimensionEntry().getIdAsString();
+                            final String dimensionId = player.getServerWorld().getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                             final Vec3d location = new Vec3d(player.getX(), player.getY(), player.getZ());
                             execute(source, dimensionId, location, player.getYaw(), player.getPitch(), null);
                             return Command.SINGLE_SUCCESS;
@@ -44,7 +41,7 @@ public final class RawTpChat {
                             .then(CommandManager.argument("location", Vec3ArgumentType.vec3())
                                     .executes(context -> {
                                         final ServerCommandSource source = context.getSource();
-                                        final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getIdAsString();
+                                        final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                         final Vec3d location = Vec3ArgumentType.getVec3(context, "location");
                                         execute(source, dimensionId, location, null);
                                         return Command.SINGLE_SUCCESS;
@@ -52,20 +49,20 @@ public final class RawTpChat {
                                     .then(CommandManager.argument("rotation", RotationArgumentType.rotation())
                                             .executes(context -> {
                                                 final ServerCommandSource source = context.getSource();
-                                                final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getIdAsString();
+                                                final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                                 final Vec3d location = Vec3ArgumentType.getVec3(context, "location");
-                                                final Vec2f rotation = RotationArgumentType.getRotation(context, "rotation").getRotation(source);
+                                                final Vec2f rotation = RotationArgumentType.getRotation(context, "rotation").toAbsoluteRotation(source);
                                                 execute(source, dimensionId, location, rotation.x, rotation.y, null);
                                                 return Command.SINGLE_SUCCESS;
                                             })
-                                            .then(CommandManager.argument("text", TextArgumentType.text(commandRegistryAccess))
+                                            .then(CommandManager.argument("text", TextArgumentType.text())
                                                     .requires(source -> source.hasPermissionLevel(2))
                                                     .executes(context -> {
                                                         final ServerCommandSource source = context.getSource();
-                                                        final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getIdAsString();
+                                                        final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                                         final Vec3d location = Vec3ArgumentType.getVec3(context, "location");
                                                         final Text text = TextArgumentType.getTextArgument(context, "text");
-                                                        final Vec2f rotation = RotationArgumentType.getRotation(context, "rotation").getRotation(source);
+                                                        final Vec2f rotation = RotationArgumentType.getRotation(context, "rotation").toAbsoluteRotation(source);
                                                         execute(source, dimensionId, location, rotation.x, rotation.y, text);
                                                         return Command.SINGLE_SUCCESS;
                                                     })
@@ -74,9 +71,9 @@ public final class RawTpChat {
                                                     .then(CommandManager.argument("message", MessageArgumentType.message())
                                                             .executes(context -> {
                                                                 final ServerCommandSource source = context.getSource();
-                                                                final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getIdAsString();
+                                                                final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                                                 final Vec3d location = Vec3ArgumentType.getVec3(context, "location");
-                                                                final Vec2f rotation = RotationArgumentType.getRotation(context, "rotation").getRotation(source);
+                                                                final Vec2f rotation = RotationArgumentType.getRotation(context, "rotation").toAbsoluteRotation(source);
                                                                 final Text text = MessageArgumentType.getMessage(context, "message");
                                                                 execute(source, dimensionId, location, rotation.x, rotation.y, text);
                                                                 return Command.SINGLE_SUCCESS;
@@ -84,11 +81,11 @@ public final class RawTpChat {
                                                     )
                                             )
                                     )
-                                    .then(CommandManager.argument("text", TextArgumentType.text(commandRegistryAccess))
+                                    .then(CommandManager.argument("text", TextArgumentType.text())
                                             .requires(source -> source.hasPermissionLevel(2))
                                             .executes(context -> {
                                                 final ServerCommandSource source = context.getSource();
-                                                final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getIdAsString();
+                                                final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                                 final Vec3d location = Vec3ArgumentType.getVec3(context, "location");
                                                 final Text text = TextArgumentType.getTextArgument(context, "text");
                                                 execute(source, dimensionId, location, text);
@@ -99,7 +96,7 @@ public final class RawTpChat {
                                             .then(CommandManager.argument("message", MessageArgumentType.message())
                                                     .executes(context -> {
                                                         final ServerCommandSource source = context.getSource();
-                                                        final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getIdAsString();
+                                                        final String dimensionId = DimensionArgumentType.getDimensionArgument(context, "dimension").getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                                         final Vec3d location = Vec3ArgumentType.getVec3(context, "location");
                                                         final Text text = MessageArgumentType.getMessage(context, "message");
                                                         execute(source, dimensionId, location, text);
@@ -109,14 +106,14 @@ public final class RawTpChat {
                                     )
                             )
                     )
-                    .then(CommandManager.argument("text", TextArgumentType.text(commandRegistryAccess))
+                    .then(CommandManager.argument("text", TextArgumentType.text())
                             .requires(source -> source.hasPermissionLevel(2))
                             .executes(context -> {
                                 final ServerCommandSource source = context.getSource();
                                 if (source.isExecutedByPlayer()) {
                                     final ServerPlayerEntity player = source.getPlayer();
                                     assert player != null;
-                                    final String dimensionId = player.getServerWorld().getDimensionEntry().getIdAsString();
+                                    final String dimensionId = player.getServerWorld().getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                     final Vec3d location = new Vec3d(player.getX(), player.getY(), player.getZ());
                                     final Text text = TextArgumentType.getTextArgument(context, "text");
                                     execute(source, dimensionId, location, player.getYaw(), player.getPitch(), text);
@@ -132,7 +129,7 @@ public final class RawTpChat {
                                         if (source.isExecutedByPlayer()) {
                                             final ServerPlayerEntity player = source.getPlayer();
                                             assert player != null;
-                                            final String dimensionId = player.getServerWorld().getDimensionEntry().getIdAsString();
+                                            final String dimensionId = player.getServerWorld().getDimensionEntry().getKey().map(key -> key.getValue().toString()).orElse("[unregistered]");
                                             final Vec3d location = new Vec3d(player.getX(), player.getY(), player.getZ());
                                             final Text text = MessageArgumentType.getMessage(context, "message");
                                             execute(source, dimensionId, location, text);
@@ -145,6 +142,9 @@ public final class RawTpChat {
             );
         }));
     };
+
+    private RawTpChat() {
+    }
 
     private static void execute(ServerCommandSource source, String dimensionId, Vec3d location, @Nullable Text text) {
         MutableText mutableText = (MutableText) text;
