@@ -22,9 +22,6 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public final class RawTpChat {
-    private RawTpChat() {
-    }
-
     public static final ModInitializer MAIN = () -> {
         CommandRegistrationCallback.EVENT.register(((dispatcher, commandRegistryAccess, registrationEnvironment) -> {
             dispatcher.register(CommandManager.literal("tpchat")
@@ -146,13 +143,16 @@ public final class RawTpChat {
         }));
     };
 
+    private RawTpChat() {
+    }
+
     private static void execute(ServerCommandSource source, String dimensionId, Vec3d location, @Nullable Text text) {
         MutableText mutableText = (MutableText) text;
         if (mutableText == null)
             mutableText = ((MutableText) Text.of("[")).append(Text.translatableWithFallback("dimension." + dimensionId.replace(':', '.'), dimensionId)).append(Text.of(" " + Math.round(location.x) + ", " + Math.round(location.y) + ", " + Math.round(location.y) + "]"));
         final Style newStyle = mutableText.getStyle()
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip")))
-                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in " + dimensionId + " run tp @s " + location.x + " " + location.y + " " + location.z))
+                .withHoverEvent(new HoverEvent.ShowText(Text.translatable("chat.coordinates.tooltip")))
+                .withClickEvent(new ClickEvent.RunCommand("/execute in " + dimensionId + " run tp @s " + location.x + " " + location.y + " " + location.z))
                 .withColor(Formatting.YELLOW);
         if (source.isExecutedByPlayer()) {
             source.getServer().getPlayerManager().broadcast(Text.translatable("raw-tpchat.share.player", source.getPlayer().getName()).append(mutableText.setStyle(newStyle)), false);
@@ -166,8 +166,8 @@ public final class RawTpChat {
         if (mutableText == null)
             mutableText = ((MutableText) Text.of("[")).append(Text.translatableWithFallback("dimension." + dimensionId.replace(':', '.'), dimensionId)).append(Text.of(" " + Math.round(location.x) + ", " + Math.round(location.y) + ", " + Math.round(location.y) + "]"));
         final Style newStyle = mutableText.getStyle()
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip")))
-                .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/execute in " + dimensionId + " run tp @s " + location.x + " " + location.y + " " + location.z + " " + yaw + " " + pitch))
+                .withHoverEvent(new HoverEvent.ShowText(Text.translatable("chat.coordinates.tooltip")))
+                .withClickEvent(new ClickEvent.RunCommand("/execute in " + dimensionId + " run tp @s " + location.x + " " + location.y + " " + location.z + " " + yaw + " " + pitch))
                 .withColor(Formatting.YELLOW);
         if (source.isExecutedByPlayer()) {
             source.getServer().getPlayerManager().broadcast(Text.translatable("raw-tpchat.share.player", source.getPlayer().getName()).append(mutableText.setStyle(newStyle)), false);
